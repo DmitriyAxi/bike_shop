@@ -1,0 +1,8 @@
+.oldPriceTitle {
+    margin: 0 15px;
+    text-decoration: line-through;
+}
+
+.bikeCard {
+    width: 500px;
+}
