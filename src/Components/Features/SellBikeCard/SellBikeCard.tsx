@@ -30,8 +30,6 @@ export default function SellBikeCard(props: IBikeForSaleProps) {
                     </Card.Header.Title>
                 </Card.Header>
                 <Card.Image size="3by2" src={props.bikeForSale.image}/>
-                <Card.Content>
-                </Card.Content>
                 <Card.Footer px={4} py={4} justifyContent="space-between">
                     <div>
                         <span>{props.bikeForSale.price} ₽</span>

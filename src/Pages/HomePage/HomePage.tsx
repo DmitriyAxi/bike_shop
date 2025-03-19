@@ -22,7 +22,7 @@ export default function HomePage() {
                     </Level.Item>
                 </Level.Side>
             </Level>
-            <BikeList bikeProducts={bikes}></BikeList>
+            <BikeList bikeProducts={bikes}/>
         </>
     );
 }

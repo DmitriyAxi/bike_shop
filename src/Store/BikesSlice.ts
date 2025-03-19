@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IBike } from '../Types/Bike.ts';
-import { bikeProducts } from '../Constants/Product.ts';
+import { bikeProducts, filters, brands } from '../Constants/Product.ts';
 
 export enum ISortCriteria {
     PriceFromLow = 'priceFromLow',
@@ -10,18 +10,28 @@ export enum ISortCriteria {
     Newest = 'newest',
 }
 
-interface IPriceRange {
-    PriceFrom: number
-    PriceTo: number
+export interface IPriceRange {
+    id: number
+    name: string
+    min: number
+    max: number
 }
 
 export interface IFilterCriteria {
     BikeTypes: string[]
-    Brand: string
-    Price: IPriceRange
-    FrameSize: string
+    Brand: string[]
+    Price: IPriceRange[]
+    FrameSize: string[]
     InStock: boolean
 }
+
+export const getDefaultFilterCriteria = (): IFilterCriteria => ({
+    BikeTypes: [],
+    Brand: [],
+    FrameSize: [],
+    InStock: false,
+    Price: [],
+});
 
 interface BikesState {
     bikes: IBike[];
@@ -33,10 +43,10 @@ const initialState: BikesState = {
     bikes: bikeProducts,
     sortCriteria: ISortCriteria.PriceFromLow,
     filterCriteria: {
-        BikeTypes: [], 
-        Brand: '', 
-        Price: { PriceFrom: 0, PriceTo: Infinity },
-        FrameSize: '', 
+        BikeTypes: filters.types, 
+        Brand: brands.map((brand) => brand.name), 
+        Price: filters.priceRanges,
+        FrameSize: filters.frameSizes, 
         InStock: false, 
     },
 };
@@ -72,27 +82,22 @@ const bikesSlice = createSlice({
             state.bikes = sorted;
         },
         filterBikes: (state, action: PayloadAction<IFilterCriteria>) => {
-            state.filterCriteria = action.payload;
             state.bikes = bikeProducts.filter((bike) => {
-                // const matchesType =
-                //     action.payload.BikeTypes.length === 0 ||
-                //     action.payload.BikeTypes.includes(bike.type);
-                // const matchesBrand =
-                //     !action.payload.Brand || bike.brand === action.payload.Brand;
-                // const matchesPrice =
-                //     bike.price >= action.payload.Price.PriceFrom &&
-                //     bike.price <= action.payload.Price.PriceTo;
-                // const matchesSize =
-                //     !action.payload.FrameSize || bike.specifications.frameSize.includes(action.payload.FrameSize);
-                const matchesInStore =
-                    bike.inStock === action.payload.InStock;
-
+                const matchBrand =
+                    action.payload.Brand.length === 0 || action.payload.Brand.includes(bike.brand) 
+                const matchTypes =
+                    action.payload.BikeTypes.length === 0 || action.payload.BikeTypes.includes(bike.type)
+                const matchFrameSize =
+                    action.payload.FrameSize.length === 0 || action.payload.FrameSize.includes(bike.type)
+                const matchPriceRange =
+                    action.payload.Price.length === 0 || action.payload.Price.some((range) => bike.price >= range.min && bike.price <= range.max);
+                const matchInStock = !action.payload.InStock || bike.inStock; 
                 return (
-                    // matchesType &&
-                    // matchesBrand &&
-                    // matchesPrice &&
-                    // matchesSize &&
-                    matchesInStore
+                    matchBrand &&
+                    matchTypes &&
+                    matchFrameSize &&
+                    matchPriceRange &&
+                    matchInStock
                 )});
         },  
     },

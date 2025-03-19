@@ -9,7 +9,7 @@ interface BikeListProps {
 
 export default function BikeList(props: BikeListProps) {
     return (
-        <Container className='card-container '>
+        <Container className='card-container'>
             {props.bikeProducts?.map((bike: IBike) => <BikeCard key={bike.id} bike={bike}/>)}
         </Container>
     );

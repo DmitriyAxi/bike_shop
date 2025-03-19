@@ -1,39 +1,61 @@
 import {Button, Modal} from "react-bulma-components";
 import {useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import  {IFilterCriteria} from "../../../Store/BikesSlice"
+import {getDefaultFilterCriteria, IFilterCriteria, IPriceRange} from "../../../Store/BikesSlice"
 import {RootState} from "../../../Store/Store.ts";
 import {filterBikes} from "../../../Store/BikesSlice";
 
 export default function FilterBikes() {
     const [isActive, setIsActive] = useState(false)
-    const [filters, setFilters] = useState<IFilterCriteria>({
-        BikeTypes: [],
-        Brand: '',
-        Price: { PriceFrom: 0, PriceTo: Infinity },
-        FrameSize: '',
-        InStock: false,
-    });
+    const [filters, setFilters] = useState<IFilterCriteria>(getDefaultFilterCriteria());
+    const filtersFromStore = useSelector((state: RootState) => state.bikes.filterCriteria)
 
-    const bikeList = useSelector((state: RootState) => state.bikes.bikes);
     const dispatch = useDispatch()
-
+    
     const handleCloseModal = () => {
         setIsActive(false)
+        setFilters(getDefaultFilterCriteria())
     }
-
-    const handleSwitchInStock = (check: boolean) => {
-        setFilters((filter) => ({...filter, InStock: check}))
-    };
 
     const handleApplyFilters = () => {
         dispatch(filterBikes(filters));
         handleCloseModal();
     };
-    
-    const uniqueBikeTypes = Array.from(new Set((bikeList.map((bike) => bike.type)))) 
-    const uniqueBikeBrands = Array.from(new Set((bikeList.map((bike) => bike.brand))))
-    const uniqueFrameSize = Array.from(new Set((bikeList.flatMap((bike) => bike.specifications.frameSize))))
+
+    const handleChangeBrand = (brand: string) => {
+        setFilters((prevFilters) => {
+            const newBrands = prevFilters.Brand.includes(brand)
+                ? prevFilters.Brand.filter((b) => b !== brand)
+                : [...prevFilters.Brand, brand]
+            return { ...prevFilters, Brand: newBrands }
+        });
+    };
+
+    const handleChangeType = (type: string) => {
+        setFilters((prevFilters) => {
+            const newBrands = prevFilters.BikeTypes.includes(type)
+                ? prevFilters.BikeTypes.filter((t) => t !== type)
+                : [...prevFilters.BikeTypes, type]
+            return { ...prevFilters, BikeTypes: newBrands }
+        });
+    };
+
+    const handleFrameSize = (frameSize: string) => {
+        setFilters((prevFilters) => {
+            const newBrands = prevFilters.FrameSize.includes(frameSize)
+                ? prevFilters.FrameSize.filter((f) => f !== frameSize)
+                : [...prevFilters.FrameSize, frameSize]
+            return { ...prevFilters, FrameSize: newBrands }
+        });
+    };
+
+    const handleChangePrice = (priceRange: IPriceRange) => {
+        setFilters((prevFilters) => ({...prevFilters, Price: [priceRange]}));
+    };
+
+    const handleInStock = (checked: boolean) => {
+        setFilters((prevFilters) => ({...prevFilters, InStock: checked}));
+    };
 
     return (
         <>
@@ -56,39 +78,49 @@ export default function FilterBikes() {
                     <Modal.Card.Body>
                         <div>
                             <span>Bike type:</span>
-                            {uniqueBikeTypes.map((bikeType) =>
+                            {filtersFromStore.BikeTypes.map((bikeType) =>
                                 <label style={{marginLeft: "10px"}}>
-                                    <input type="checkbox"/>
+                                    <input 
+                                        type="checkbox"
+                                        onChange={() => handleChangeType(bikeType)}
+                                    />
                                     <span>{bikeType}</span>
                                 </label>
                             )}
                         </div>
                         <div>
                             <span>Bike brand:</span>
-                            {uniqueBikeBrands.map((bikeBrand) =>
+                            {filtersFromStore.Brand.map((bikeBrand) =>
                                 <label style={{marginLeft: "10px"}}>
-                                    <input type="checkbox"/>
+                                    <input 
+                                        type="checkbox"
+                                        onChange={() => handleChangeBrand(bikeBrand)}
+                                    />
                                     <span>{bikeBrand}</span>
                                 </label>
                             )}
                         </div>
                         <div>
                             <span>Price range: </span>
-                            <input
-                                // onChange={handleChange}
-                                placeholder="From"
-                            />
-                            <span> - </span>
-                            <input
-                                // onChange={handleChange}
-                                placeholder="To"
-                            />
+                            {filtersFromStore.Price.map((price) => (
+                                <label key={price.id} style={{ marginLeft: "10px" }}>
+                                    <input
+                                        type="radio"
+                                        name="priceRange" 
+                                        onChange={() => handleChangePrice(price)}
+                                    />
+                                    <span>{price.name}</span>
+                                </label>
+                            ))}
                         </div>
                         <div>
                             <span>Frame size:</span>
-                            {uniqueFrameSize.map((frameSize) =>
+                            {filtersFromStore.FrameSize.map((frameSize) =>
                                 <label style={{marginLeft: "10px"}}>
-                                    <input type="checkbox"/>
+                                    <input 
+                                        type="checkbox"
+                                        onChange={() => handleFrameSize(frameSize)}
+                                    />
                                     <span>{frameSize}</span>
                                 </label>
                             )}
@@ -98,7 +130,8 @@ export default function FilterBikes() {
                             <label style={{marginLeft: "10px"}}>
                                 <input 
                                     type="checkbox" 
-                                    onChange={(event) => handleSwitchInStock((event.target.checked))}/>
+                                    onChange={(event) => handleInStock(event.target.checked)}
+                                />
                                 <span>In stock</span>
                             </label>
                         </div>

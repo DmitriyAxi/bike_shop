@@ -90,8 +90,6 @@ export default function OrderForm() {
                                 values: IOrderForm,
                                 { setSubmitting }: FormikHelpers<IOrderForm>
                             ) => {
-                                console.log('1', values)
-                                console.log('setSubmitting', setSubmitting)
                                 setTimeout(() => {
                                     alert(JSON.stringify(values, null, 2));
                                     setSubmitting(false);

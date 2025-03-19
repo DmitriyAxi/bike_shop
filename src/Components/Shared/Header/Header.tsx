@@ -9,7 +9,7 @@ import ROUTES from "../../../Constants/Routes.ts";
 export default function Header() {
     const dispatch = useDispatch()
     const navigate = useNavigate()
-    const isLight = useSelector((state: RootState) => state.theme.isLight);
+    const isLightTheme = useSelector((state: RootState) => state.theme.isLight);
     const countSellBikes = useSelector((state: RootState) => state.shoppingCart.BikesForSale.length);
 
     const handleSwitchTheme = () => {
@@ -23,7 +23,7 @@ export default function Header() {
                     <Navbar.Item>
                         <span>Change theme</span>
                         <label className="switch">
-                            <input type="checkbox" onChange={handleSwitchTheme} checked={!isLight}/>
+                            <input type="checkbox" onChange={handleSwitchTheme} checked={!isLightTheme}/>
                                 <span className="slider"></span>
                         </label>
                     </Navbar.Item>
