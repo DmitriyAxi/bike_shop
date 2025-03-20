@@ -13,7 +13,9 @@ interface IBikeProps {
 export default function BikeCard(props: IBikeProps) {
     const dispatch = useDispatch()
     const sellBikeIds =  useSelector((state: RootState) => state.shoppingCart.BikesForSale.map((bike) => bike.id));
-
+    const { id, name, image, description, oldPrice, price } = props.bike;
+    
+    const bikeInShoppingCart = sellBikeIds.includes(id)
     const handeAddToShoppingCart = (id: string) => {
         dispatch(addToShoppingCart(id))
     }
@@ -27,21 +29,20 @@ export default function BikeCard(props: IBikeProps) {
             <Card mb="4" className="bikeCard">
                 <Card.Header>
                     <Card.Header.Title>
-                        {props.bike.name}
+                        {name}
                     </Card.Header.Title>
                 </Card.Header>
-                <Card.Image size="4by3" src={props.bike.image}/>
+                <Card.Image size="4by3" src={image}/>
                 <Card.Content>
-                    <p>{props.bike.description}</p>
+                    <p>{description}</p>
                 </Card.Content>
                 <Card.Footer px={4} py={4} justifyContent="space-between">
                     <div>
-                        {props.bike.oldPrice && <span className="oldPriceTitle">{props.bike.oldPrice} ₽</span>}
-                        <span>{props.bike.price} ₽</span>
+                        {oldPrice && <span className="oldPriceTitle">{oldPrice} ₽</span>}
+                        <span>{price} ₽</span>
                     </div>
-                    {sellBikeIds.includes(props.bike.id) 
-                        ? <Button color="danger" onClick={() => handeRemoveFromShoppingCart(props.bike.id)}>Remove from cart</Button> 
-                        : <Button color="primary" onClick={() => handeAddToShoppingCart(props.bike.id)}>In cart</Button> }
+                    {bikeInShoppingCart && <Button color="danger" onClick={() => handeRemoveFromShoppingCart(props.bike.id)}>Remove from cart</Button>}
+                    {!bikeInShoppingCart && <Button color="primary" onClick={() => handeAddToShoppingCart(props.bike.id)}>In cart</Button> }
                 </Card.Footer>
             </Card>
         </>

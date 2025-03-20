@@ -3,6 +3,14 @@ import {ISortCriteria, sortBikes} from "../../../Store/BikesSlice.ts";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../Store/Store.ts";
 
+const sortOptions = [
+    { value: ISortCriteria.PriceFromLow, label: "Price from low ↑" },
+    { value: ISortCriteria.PriceFromHigh, label: "Price from high ↓" },
+    { value: ISortCriteria.Popular, label: "Popular" },
+    { value: ISortCriteria.Rating, label: "Rating" },
+    { value: ISortCriteria.Newest, label: "Newest" }
+];
+
 export default function SortBikes() {
     const dispatch = useDispatch();
 
@@ -18,21 +26,11 @@ export default function SortBikes() {
             closeOnSelect={true}
             onChange={handleSortChange}
         >
-            <Dropdown.Item value={ISortCriteria.PriceFromLow}>
-                Price from low ↑
-            </Dropdown.Item>
-            <Dropdown.Item value={ISortCriteria.PriceFromHigh}>
-                Price from high ↓
-            </Dropdown.Item>
-            <Dropdown.Item value={ISortCriteria.Popular}>
-                Popular
-            </Dropdown.Item>
-            <Dropdown.Item value={ISortCriteria.Rating}>
-                Rating
-            </Dropdown.Item>
-            <Dropdown.Item value={ISortCriteria.Newest}>
-                Newest
-            </Dropdown.Item>
+            {sortOptions.map((option) => (
+                <Dropdown.Item key={option.value} value={option.value}>
+                    {option.label}
+                </Dropdown.Item>
+            ))}
         </Dropdown>
     )
 }

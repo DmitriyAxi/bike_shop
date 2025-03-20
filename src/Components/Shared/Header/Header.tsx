@@ -1,20 +1,15 @@
 import {Button, Navbar} from 'react-bulma-components';
 import './Header.css'
-import {useDispatch, useSelector} from "react-redux";
+import {useSelector} from "react-redux";
 import {RootState} from "../../../Store/Store.ts";
-import {switchTheme} from "../../../Store/ThemeSlice.ts";
 import {useNavigate} from "react-router-dom";
 import ROUTES from "../../../Constants/Routes.ts";
+import {useTheme} from "../../../Hooks/UseTheme.tsx";
 
 export default function Header() {
-    const dispatch = useDispatch()
     const navigate = useNavigate()
-    const isLightTheme = useSelector((state: RootState) => state.theme.isLight);
+    const { isLight, toggleTheme } = useTheme();    
     const countSellBikes = useSelector((state: RootState) => state.shoppingCart.BikesForSale.length);
-
-    const handleSwitchTheme = () => {
-        dispatch((switchTheme()))
-    }
 
     return (
         <Navbar fixed='top'>
@@ -23,7 +18,7 @@ export default function Header() {
                     <Navbar.Item>
                         <span>Change theme</span>
                         <label className="switch">
-                            <input type="checkbox" onChange={handleSwitchTheme} checked={!isLightTheme}/>
+                            <input type="checkbox" onChange={toggleTheme} checked={!isLight}/>
                                 <span className="slider"></span>
                         </label>
                     </Navbar.Item>

@@ -4,13 +4,12 @@ import HomePage from "./Pages/HomePage/HomePage.tsx";
 import Header from "./Components/Shared/Header/Header.tsx";
 import 'bulma/css/bulma.min.css';
 import {Section} from "react-bulma-components";
-import {useSelector} from "react-redux";
-import {RootState} from "./Store/Store.ts";
 import ShoppingCart from "./Pages/ShoppingCart/ShoppingCart.tsx";
+import {useTheme} from "./Hooks/UseTheme.tsx";
 
 export default function App() {
-    const isLight = useSelector((state: RootState) => state.theme.isLight);
-
+    const { isLight } = useTheme();
+    
     return (
     <>  
         <Header/>
@@ -20,7 +19,6 @@ export default function App() {
                 <Route path={ROUTES.shoppingCart} element={<ShoppingCart/>}/>
             </Routes>
         </Section>
-        <footer></footer>
     </>
   )
 }

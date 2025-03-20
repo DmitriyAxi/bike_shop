@@ -2,28 +2,45 @@ import {Button, Modal} from "react-bulma-components";
 import {useState} from "react"
 import {Formik, Form, Field, ErrorMessage, FormikHelpers} from 'formik';
 import "./OrderForm.css"
+import {DeliveryMethod, PaymentType, IOrderForm} from "../../../Types/Shared.ts";
 
-enum DeliveryMethod {
-    Nothing= "",
-    Pickup = "Pickup",
-    Courier = "Courier",
-    RussiaPost = "RussiaPost"
-}
+const initialValues: IOrderForm = {
+    fullName: '',
+    email: '',
+    phone: '',
+    address: '',
+    deliveryMethod: DeliveryMethod.Nothing,
+    paymentType: PaymentType.Nothing,
+};
 
-enum PaymentType {
-    Nothing = "",
-    Cash = "Cash",
-    Card = "Card",
-}
+const validateOrderForm = (values: IOrderForm) => {
+    const errors: Partial<Record<keyof IOrderForm, string>> = {};
 
-interface IOrderForm {
-    fullName: string;
-    email: string;
-    phone: string;
-    address: string;
-    deliveryMethod: DeliveryMethod;
-    paymentType: PaymentType
-}
+    if (!values.fullName) {
+        errors.fullName = 'Required';
+    }
+    if (!values.email) {
+        errors.email = 'Required';
+    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
+        errors.email = 'Invalid email address';
+    }
+    if (!values.phone) {
+        errors.phone = 'Required';
+    } else if (!/^\+?\d{10,15}$/i.test(values.phone)) {
+        errors.phone = 'Invalid phone number';
+    }
+    if (!values.address) {
+        errors.address = 'Required';
+    }
+    if (values.deliveryMethod === DeliveryMethod.Nothing) {
+        errors.deliveryMethod = 'Required';
+    }
+    if (values.paymentType === PaymentType.Nothing) {
+        errors.paymentType = 'Required';
+    }
+
+    return errors;
+};
 
 export default function OrderForm() {
     const  [isActive, setIsActive] = useState(false)
@@ -50,42 +67,8 @@ export default function OrderForm() {
                     </Modal.Card.Header>
                     <Modal.Card.Body>
                         <Formik
-                            initialValues={{ 
-                                fullName: '', 
-                                email: '', 
-                                phone: '', 
-                                address: '', 
-                                deliveryMethod: DeliveryMethod.Nothing ,
-                                paymentType: PaymentType.Nothing
-                            }}
-                            validate={values => {
-                                const errors : Partial<Record<keyof IOrderForm, string>> = {};
-                                if (!values.fullName) {
-                                    errors.fullName = 'Required';
-                                }
-                                if (!values.email) {
-                                    errors.email = 'Required';
-                                } else if (
-                                    !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-                                ) {
-                                    errors.email = 'Invalid email address';
-                                }
-                                if (!values.phone) {
-                                    errors.phone = 'Required';
-                                } else if (!/^\+?\d{10,15}$/i.test(values.phone)) {
-                                    errors.phone = 'Invalid phone number';
-                                }
-                                if (!values.address) {
-                                    errors.address = 'Required';
-                                }
-                                if (values.deliveryMethod === DeliveryMethod.Nothing) {
-                                    errors.deliveryMethod = 'Required'; 
-                                }
-                                if (values.paymentType === PaymentType.Nothing) {
-                                    errors.paymentType = 'Required';
-                                }
-                                return errors;
-                            }}
+                            initialValues={initialValues}
+                            validate={validateOrderForm}
                             onSubmit={(
                                 values: IOrderForm,
                                 { setSubmitting }: FormikHelpers<IOrderForm>

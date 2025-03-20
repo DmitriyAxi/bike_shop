@@ -18,19 +18,19 @@ export interface IPriceRange {
 }
 
 export interface IFilterCriteria {
-    BikeTypes: string[]
-    Brand: string[]
-    Price: IPriceRange[]
-    FrameSize: string[]
-    InStock: boolean
+    bikeTypes: string[]
+    brands: string[]
+    prices: IPriceRange[]
+    frameSizes: string[]
+    inStock: boolean
 }
 
 export const getDefaultFilterCriteria = (): IFilterCriteria => ({
-    BikeTypes: [],
-    Brand: [],
-    FrameSize: [],
-    InStock: false,
-    Price: [],
+    bikeTypes: [],
+    brands: [],
+    frameSizes: [],
+    inStock: false,
+    prices: [],
 });
 
 interface BikesState {
@@ -43,11 +43,11 @@ const initialState: BikesState = {
     bikes: bikeProducts,
     sortCriteria: ISortCriteria.PriceFromLow,
     filterCriteria: {
-        BikeTypes: filters.types, 
-        Brand: brands.map((brand) => brand.name), 
-        Price: filters.priceRanges,
-        FrameSize: filters.frameSizes, 
-        InStock: false, 
+        bikeTypes: filters.types, 
+        brands: brands.map((brand) => brand.name), 
+        prices: filters.priceRanges,
+        frameSizes: filters.frameSizes, 
+        inStock: false, 
     },
 };
 
@@ -84,14 +84,14 @@ const bikesSlice = createSlice({
         filterBikes: (state, action: PayloadAction<IFilterCriteria>) => {
             state.bikes = bikeProducts.filter((bike) => {
                 const matchBrand =
-                    action.payload.Brand.length === 0 || action.payload.Brand.includes(bike.brand) 
+                    action.payload.brands.length === 0 || action.payload.brands.includes(bike.brand) 
                 const matchTypes =
-                    action.payload.BikeTypes.length === 0 || action.payload.BikeTypes.includes(bike.type)
+                    action.payload.bikeTypes.length === 0 || action.payload.bikeTypes.includes(bike.type)
                 const matchFrameSize =
-                    action.payload.FrameSize.length === 0 || action.payload.FrameSize.includes(bike.type)
+                    action.payload.frameSizes.length === 0 || action.payload.frameSizes.includes(bike.type)
                 const matchPriceRange =
-                    action.payload.Price.length === 0 || action.payload.Price.some((range) => bike.price >= range.min && bike.price <= range.max);
-                const matchInStock = !action.payload.InStock || bike.inStock; 
+                    action.payload.prices.length === 0 || action.payload.prices.some((range) => bike.price >= range.min && bike.price <= range.max);
+                const matchInStock = !action.payload.inStock || bike.inStock; 
                 return (
                     matchBrand &&
                     matchTypes &&
